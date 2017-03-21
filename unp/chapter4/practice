@@ -1,0 +1,25 @@
+#CHAPTER 4
+####1. 在4.4节中，我们说头文件< netinet/in.h > 中定义的INADDR_常值是主机字节序的。我们应该如何辨别。
+主机字节序可以分为大端和小端：
+小端：内存先存放低序字节(linux采用小端字节序)
+大端：内存先存放高序字节
+
+####2. 把图1-5改为在connect成功返回之后调用getsockname。使用sock_ntop显示赋予TCP套接字的本地IP地址和本地端口号。你的系统的临时端口号在什么范围？
+~~~c
+        struct sockaddr_in addr;
+        socklen_t addrlen;
+        getsockname(sockfd, (SA *)&addr, &addrlen);
+        char ptr[MAXLINE];
+        char ptr2[MAXLINE];
+        cout << inet_ntop(AF_INET, &addr.sin_addr, ptr, MAXLINE) << endl;
+        cout << addr.sin_port << endl;
+~~~
+测试地址为0.0.0.0 , 127.0.0.1, 10.30.2.199
+测试输出IP地址和端口分别0.0.0.0和0
+####3. 在一个并发服务器中，假设fork调用返回之后子进程先运行，而且子进程随后在fork调用返回父进程之前就完成对客户的服务。图4-13中的两个close调用将会发生什么？
+子进程对描述符引用计数为2减为1，并不发生什么意料之外的事情。随后父进程调用close对描述符引用计数减为0，释放并清理其内存数据。
+与之前课文版本的最终结果并无二异。
+####4. 在图4-11中，先把服务器的端口号从13改为9999（这样不需要超级用户特权就能启动程序），再删掉listen调用，将会发生什么？
+accept调用之后返回EINVAL，该函数并没有使用监听套接字符。
+####5. 继续上一题，删掉bind调用，但是保留listen调用，又将会发什么？
+若不使用bind( )，listen( )调用会为监听套接字分配一个临时套接字端口。

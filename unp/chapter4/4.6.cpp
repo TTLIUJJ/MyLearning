@@ -30,7 +30,8 @@ int main(int argc, char **argv)
 		ticks = time(NULL);
 		snprintf(buff, sizeof(buff), "%.24s\r\n", ctime(&ticks));
 		write(connfd, buff, strlen(buff));
-		
+		fputs(buff, stdout);
+
 		close(connfd);
 	}
 }

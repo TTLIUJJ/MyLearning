@@ -14,7 +14,7 @@ int main(int argc, char **argv)
 	}
 
 	if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0){
-		cerr << "socket error" << endl;
+		cerr << "socket error: " << strerror(errno) << endl;
 		return -1;
 	}
 	
@@ -29,7 +29,19 @@ int main(int argc, char **argv)
 		cerr << "connet error" << endl;
 		return -1;
 	}
+	
+	struct sockaddr_in addr;
+	socklen_t addrlen;
+	getsockname(sockfd, (SA *)&addr, &addrlen);
+	char ptr[MAXLINE];
+	char ptr2[MAXLINE];
+	cout << inet_ntop(AF_INET, &addr.sin_addr, ptr, MAXLINE) << endl;
+	cout << inet_ntop(AF_INET, &addr.sin_port, ptr2, MAXLINE) << endl;
+	cout << addr.sin_port << endl;
+
+	int cnt = 0;
 	while((n = read(sockfd, recvline, MAXLINE)) > 0){
+		++cnt;
 		recvline[n] = 0;
 		if(fputs(recvline, stdout) == EOF){
 			cerr << "fputs error" << endl;
@@ -40,5 +52,6 @@ int main(int argc, char **argv)
 			return -1;
 		}
 	}
+	cout << "cnt = " << cnt << endl;
 	exit(0);
 }
